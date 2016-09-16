@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from openpyxl import Workbook
 
 # the PAGE_NUM is the numbers of pages you wants to crawl
-PAGE_NUM=2
+PAGE_NUM=1
 #Some User Agents
 hds=[{'User-Agent':'Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6'},\
 {'User-Agent':'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.12 Safari/535.11'},\
@@ -77,7 +77,8 @@ def book_spider(book_tag):
             try:
                 #people_num = book_info.findAll('span')[2].string.strip()
                 people_num = get_people_num(book_url)
-                people_num = people_num.strip('人评价')
+                print people_num
+                #people_num = people_num.strip('人评价')
             except:
                 people_num ='0'
             
@@ -96,8 +97,12 @@ def get_people_num(url):
         plain_text=str(source_code)   
     except (urllib2.HTTPError, urllib2.URLError), e:
         print e
+    print 'bbb'
     soup = BeautifulSoup(plain_text)
-    people_num=soup.find('div',{'class':'rating_sum'}).findAll('span')[1].string.strip()
+    print 'aaa'
+    #people_num=soup.find('a',{'class':'rating_people'}).findAll('span')[1].string.strip()
+    people_num=soup.find('span',property='v:votes').string
+    print 'ccc'
     return people_num
 
 
@@ -130,8 +135,10 @@ def print_book_lists_excel(book_lists,book_tag_lists):
     wb.save(save_path)
 
 if __name__ == '__main__':
-    #book_tag_lists里填写感兴趣的书籍主题
-    book_tag_lists = ['个人管理','算法','数据结构','哲学']
+ 
+    #book_tag_lists 填写感兴趣的主题
+    book_tag_lists = ['算法']
+    #book_tag_lists = ['个人管理','算法','数据结构','哲学']
     print book_tag_lists
     book_lists=do_spider(book_tag_lists)
     print_book_lists_excel(book_lists,book_tag_lists)
